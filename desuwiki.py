@@ -99,13 +99,13 @@ def format_page_changes (uri_base, changes):
   new_page = (changes[0]['type'] == 'new')
 
   if new_page:
-    msg = '{:s}: uusi sivu <{:s}>'.format(title, page_uri(uri_base, title))
+    msg = '\2{:s}\2 - uusi sivu <{:s}>'.format(title, page_uri(uri_base, title))
   else:
     diff_prev = changes[0]['old_revid']
     diff_cur = changes[-1]['revid']
     uri = diff_uri(uri_base, title, diff_prev, diff_cur)
     count = len(changes)
-    msg = '{:s}: {:d} muokkaus{:s} <{:s}>'.format(
+    msg = '\2{:s}\2 - {:d} muokkaus{:s} <{:s}>'.format(
         title, count, '' if count == 1 else 'ta', uri)
   return msg
 
@@ -127,9 +127,8 @@ CONF_VARS = {
 
 conf = load_vars(CONF_VARS, CONF_FILE)
 
-#changes = get_changes(conf, STATE_FILE, state_override={
-#  'last_timestamp': '2013-03-02T16:00:00Z', 'last_revid': 0})
 changes = get_changes(conf, STATE_FILE)
 
-print('\n'.join(format_changes(conf['uri_base'], changes)))
+if changes:
+  print('\n'.join(format_changes(conf['uri_base'], changes)))
 
