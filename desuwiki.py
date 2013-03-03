@@ -5,6 +5,8 @@
 import simplemediawiki
 import sys
 
+from conf import load_vars
+
 
 def get_recent_changes (wiki, rcstart=None):
   query = {
@@ -29,21 +31,6 @@ def get_recent_changes (wiki, rcstart=None):
       break
 
   return changes
-
-
-def load_vars (expected_vars, filename):
-  loaded = {}
-
-  for line in open(filename, 'r'):
-    var, _, value = line.rstrip('\r\n').partition(': ')
-    if var in expected_vars:
-      loaded[var] = expected_vars[var](value)
-
-  for var in expected_vars:
-    if var not in loaded:
-      loaded[var] = None
-
-  return loaded
 
 
 def load_state (filename):
