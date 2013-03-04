@@ -82,10 +82,10 @@ def irc_to_stdout (s):
       send_line(s, 'PONG :{:s}'.format(params[0]))
 
 
-def stdin_to_irc (s, target):
+def file_to_irc (f, s):
   GAP = 2
   last_sent = 0
-  for line in sys.stdin:
+  for line in f:
     if not line:
       line = ' '
     wait = last_sent + GAP - time.time()
@@ -102,6 +102,7 @@ CONF_VARS = {
     'irc_host': str,
     'irc_port': int,
     'pid_file': str,
+    'fifo_file': str,
 }
 
 CONF_FILE = 'mecha.conf'
@@ -118,6 +119,8 @@ except FileExistsError:
       file=sys.stderr)
   sys.exit(1)
 
+fifo = conf['fifo_file']
+
 try:
   addr = (conf['irc_host'], conf['irc_port'])
   s = socket.create_connection(addr)
@@ -131,10 +134,14 @@ try:
   target = conf['target']
   join(s, target)
 
-  stdin_to_irc(s, target)
+  os.mkfifo(fifo)
+  while True:
+    with open(fifo, 'r') as f:
+      file_to_irc(f, s)
 except:
   print('Stopping: {:s}'.format(sys.exc_info()[0]), file=sys.stderr)
 finally:
   s.close()
   os.remove(pid_file)
+  os.remove(fifo)
 
