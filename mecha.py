@@ -71,22 +71,6 @@ def register (s, nick, realname=None):
   send_line(s, 'NICK {:s}'.format(nick))
 
 
-CONF_VARS = {
-    'nick': str,
-    'realname': str,
-    'target': str,
-    'irc_host': str,
-    'irc_port': int,
-    'fifo': str,
-}
-
-CONF_FILE = 'mecha.conf'
-
-conf = load_vars(CONF_VARS, CONF_FILE)
-
-addr = (conf['irc_host'], conf['irc_port'])
-s = socket.create_connection(addr)
-
 def irc_to_stdout (s):
   for line in read_lines(s):
     print('<', line)
@@ -96,25 +80,60 @@ def irc_to_stdout (s):
     if cmd == 'PING':
       send_line(s, 'PONG :{:s}'.format(params[0]))
 
+
 def stdin_to_irc (s, target):
   GAP = 2
   last_sent = 0
   for line in sys.stdin:
+    if line:
+      line = ' '
     wait = last_sent + GAP - time.time()
     if wait > 0:
       time.sleep(wait)
     say(s, target, line)
     last_sent = time.time()
 
-thread = Thread(target=irc_to_stdout, args=(s,))
-thread.start()
 
-register(s, conf['nick'])
+CONF_VARS = {
+    'nick': str,
+    'realname': str,
+    'target': str,
+    'irc_host': str,
+    'irc_port': int,
+    'pid_file': str,
+}
 
-target = conf['target']
-join(s, target)
-stdin_to_irc(s, target)
+CONF_FILE = 'mecha.conf'
 
-thread.join()
-s.close()
+conf = load_vars(CONF_VARS, CONF_FILE)
+
+pid_file = conf['pid_file']
+
+try:
+  with open(pid_file, 'x') as f:
+    f.write('{:d}\n'.format(os.getpid()))
+except FileExistsError:
+  print('PID file exists at {:s}.\nNot running.'.format(pid_file),
+      file=sys.stderr)
+  sys.exit(1)
+
+try:
+  addr = (conf['irc_host'], conf['irc_port'])
+  s = socket.create_connection(addr)
+
+  thread = Thread(target=irc_to_stdout, args=(s,))
+  thread.daemon = True
+  thread.start()
+
+  register(s, conf['nick'])
+
+  target = conf['target']
+  join(s, target)
+
+  stdin_to_irc(s, target)
+except:
+  print('Stopping: {:s}'.format(sys.exc_info()[0]), file=sys.stderr)
+finally:
+  s.close()
+  os.remove(pid_file)
 

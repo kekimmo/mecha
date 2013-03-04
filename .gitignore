@@ -33,4 +33,5 @@ nosetests.xml
 *.conf
 *.state
 *.log
+*.pid
 
