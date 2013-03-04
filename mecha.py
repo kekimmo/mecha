@@ -24,8 +24,12 @@ def read_lines (s):
     buf += data
     line_end = buf.find(b'\r\n')
     if line_end != -1:
-      yield buf[:line_end].decode('utf-8')
+      line_data = buf[:line_end]
       buf = buf[line_end + 2:]
+      try:
+        yield line_data.decode('utf-8')
+      except UnicodeDecodeError:
+        yield line_data.decode('iso-8859-15')
 
 
 def parse_msg (line):
@@ -43,7 +47,7 @@ def parse_msg (line):
 
   params = []
   for i in range(1, len(parts)):
-    if parts[i][0] != ':':
+    if parts[i] and parts[i][0] != ':':
       params.append(parts[i])
     else:
       params.append(' '.join(parts[i:]))
