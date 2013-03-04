@@ -134,12 +134,14 @@ try:
   target = conf['target']
   join(s, target)
 
+  if os.path.exists(fifo):
+    os.remove(fifo)
   os.mkfifo(fifo)
   while True:
     with open(fifo, 'r') as f:
       file_to_irc(f, s)
-except:
-  print('Stopping: {:s}'.format(sys.exc_info()[0]), file=sys.stderr)
+#except:
+#  print('Stopping: {:s}'.format(sys.exc_info()[0]), file=sys.stderr)
 finally:
   s.close()
   os.remove(pid_file)
