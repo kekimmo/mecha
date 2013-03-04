@@ -85,7 +85,7 @@ def stdin_to_irc (s, target):
   GAP = 2
   last_sent = 0
   for line in sys.stdin:
-    if line:
+    if not line:
       line = ' '
     wait = last_sent + GAP - time.time()
     if wait > 0:

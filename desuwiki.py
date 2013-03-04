@@ -6,7 +6,7 @@ import simplemediawiki
 import sys
 import urllib.parse
 
-from conf import load_vars
+from conf import load_vars, VariablesMissing
 
 
 def get_recent_changes (wiki, rcstart=None):
@@ -39,7 +39,22 @@ def load_state (filename):
       'last_timestamp': str,
       'last_revid': int,
   }
-  return load_vars(STATE_VARS, filename)
+
+  DEFAULTS = {
+      'last_timestamp': None,
+      'last_revid': 0,
+  }
+
+  try:
+    state = load_vars(STATE_VARS, filename)
+  except VariablesMissing as e:
+    # If the file was empty, use defaults.
+    # Otherwise, something is wrong. Re-raise.
+    if e.variables == set(STATE_VARS.keys()):
+      state = DEFAULTS
+    else:
+      raise e
+  return state
 
 
 def save_state (filename, state):
