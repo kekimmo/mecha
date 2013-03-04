@@ -4,6 +4,7 @@
 
 import simplemediawiki
 import sys
+import urllib.parse
 
 from conf import load_vars
 
@@ -81,13 +82,17 @@ def changes_by_page_id (changes):
   return res
 
 
+def encode_title (title):
+  return title.replace(' ', '_')
+
+
 def page_uri (uri_base, title):
-  return '{:s}/{:s}'.format(uri_base, title)
+  return '{:s}/{:s}'.format(uri_base, encode_title(title))
 
 
 def diff_uri (uri_base, title, prev, cur):
   return '{:s}/index.php?title={:s}&diff={:d}&oldid={:d}'.format(
-      uri_base, title, cur, prev)
+      uri_base, encode_title(title), cur, prev)
 
 
 def format_page_changes (uri_base, changes):
@@ -99,14 +104,17 @@ def format_page_changes (uri_base, changes):
   new_page = (changes[0]['type'] == 'new')
 
   if new_page:
-    msg = '\2{:s}\2 - uusi sivu <{:s}>'.format(title, page_uri(uri_base, title))
+    msg = '\2{:s}\2 - uusi sivu <{:s}>'.format(
+        title,
+        page_uri(uri_base, title))
   else:
     diff_prev = changes[0]['old_revid']
     diff_cur = changes[-1]['revid']
     uri = diff_uri(uri_base, title, diff_prev, diff_cur)
     count = len(changes)
     msg = '\2{:s}\2 - {:d} muokkaus{:s} <{:s}>'.format(
-        title, count, '' if count == 1 else 'ta', uri)
+        title, count, '' if count == 1 else 'ta',
+        uri)
   return msg
 
 
@@ -128,6 +136,10 @@ CONF_VARS = {
 conf = load_vars(CONF_VARS, CONF_FILE)
 
 changes = get_changes(conf, STATE_FILE)
+#, {
+#  'last_revid': 0,
+#  'last_timestamp': '2013-03-03T00:00:00Z'
+#})
 
 if changes:
   print('\n'.join(format_changes(conf['uri_base'], changes)))

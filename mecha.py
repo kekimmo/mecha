@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 
 import socket
+import os
 import sys
 from threading import Thread
+import time
 
 from conf import load_vars
 
@@ -71,6 +73,7 @@ CONF_VARS = {
     'target': str,
     'irc_host': str,
     'irc_port': int,
+    'fifo': str,
 }
 
 CONF_FILE = 'mecha.conf'
@@ -90,8 +93,14 @@ def irc_to_stdout (s):
       send_line(s, 'PONG :{:s}'.format(params[0]))
 
 def stdin_to_irc (s, target):
+  GAP = 2
+  last_sent = 0
   for line in sys.stdin:
+    wait = last_sent + GAP - time.time()
+    if wait > 0:
+      time.sleep(wait)
     say(s, target, line)
+    last_sent = time.time()
 
 thread = Thread(target=irc_to_stdout, args=(s,))
 thread.start()
