@@ -5,6 +5,7 @@ PID_FILE=$MECHA_DIR/mecha.pid
 PIPE_FILE=$MECHA_DIR/pipe
 #INPUT_LOG=$MECHA_DIR/wiki.log
 MECHA_LOG=$MECHA_DIR/mecha.log
+MECHA_ERR=$MECHA_DIR/mecha.err.log
 MECHA_CMD=./mecha.py
 INPUT_CMD=./desuwiki.py
 
@@ -38,7 +39,7 @@ then
   mkfifo $PIPE_FILE
   # Start mecha in the background
   cd $MECHA_DIR
-  tail -n 1 -f $PIPE_FILE | $MECHA_CMD >> $MECHA_LOG &
+  tail -n 1 -f $PIPE_FILE | $MECHA_CMD >> $MECHA_LOG 2>> $MECHA_ERR &
 fi
 
 # Pipe new input to mecha
