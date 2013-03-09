@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Crond might not set this
+export LC_CTYPE=fi_FI.UTF-8
+
 MECHA_DIR=$(dirname $(readlink -f $0))
 PID_FILE=$MECHA_DIR/mecha.pid
 PIPE_FILE=$MECHA_DIR/mecha.fifo

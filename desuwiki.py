@@ -151,9 +151,8 @@ CONF_VARS = {
 conf = load_vars(CONF_VARS, CONF_FILE)
 
 changes = get_changes(conf, STATE_FILE)
-#, {
+#changes = get_changes(conf, STATE_FILE, {
 #  'last_revid': 0,
-#  'last_timestamp': '2013-03-03T00:00:00Z'
 #})
 
 if changes:
