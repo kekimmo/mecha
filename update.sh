@@ -10,7 +10,6 @@ PIPE_FILE=$MECHA_DIR/mecha.fifo
 MECHA_LOG=$MECHA_DIR/mecha.log
 MECHA_ERR=$MECHA_DIR/mecha.err.log
 MECHA_CMD=./mecha.py
-INPUT_CMD=./desuwiki.py
 
 
 is_running () {
@@ -45,5 +44,6 @@ fi
 
 # Pipe new input to mecha
 cd $MECHA_DIR
-$INPUT_CMD >> $PIPE_FILE
+./desuwiki.py >> $PIPE_FILE
+./desutick.py >> $PIPE_FILE
 

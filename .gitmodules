@@ -1,3 +1,6 @@
 [submodule "python-simplemediawiki"]
 	path = python-simplemediawiki
 	url = git://github.com/ianweller/python-simplemediawiki.git
+[submodule "python-mechanize"]
+	path = python-mechanize
+	url = git://github.com/jjlee/mechanize.git
