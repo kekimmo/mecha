@@ -53,9 +53,10 @@ if conn.getcode() == 200:
     listings = map(Listing, items)
     prices = [listing.price for listing in listings]
 
-    fmt = u"Rannekeilmoituksia Huuto.netissä: \2{:d}\2, mediaani: \2{:s}\2, maksimi: \2{:s}\2"
+    fmt = u"Rannekeilmoituksia Huuto.netissä: \2{:d}\2, halvin: \2{:s}\2, mediaani: \2{:s}\2, kallein: \2{:s}\2"
 
     out = fmt.format(len(listings),
+                     format_price(min(prices)),
                      format_price(int(median(prices))),
                      format_price(max(prices)))
     print out.encode('utf-8')
