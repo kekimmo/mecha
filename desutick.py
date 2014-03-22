@@ -28,12 +28,23 @@ response = br.submit()
 response = br.open(conf['status_uri'])
 html = response.read()
 
-matches = re.search(
-  r'<td>Desucon 2013 -ranneke</td>\s*<td class="nc">(\d+)</td>\s*<td class="nc">([0-9.]+)</td>',
-  html)
+kinds = {
+    'PDF-lippuja'           : "Desucon Frostbite 2014 PDF -lippu",
+    'Postitettavia lippuja' : "Desucon Frostbite 2014 - postitettava lippu",
+}
 
-pcs = int(matches.group(1))
-money = float(matches.group(2))
 
-print "Rannekkeita tilattu: \2%d\2 (%.2f €)" % (pcs, money)
+info = {}
+total_pcs = 0
+total_money = 0
+
+for kind, name in kinds.iteritems():
+  match_str = r'<td>{:s}</td>\s*<td class="nc">(\d+)</td>\s*<td class="nc">([0-9.]+)</td>'.format(name)
+  matches = re.search(match_str, html)
+  pcs = int(matches.group(1))
+  money = float(matches.group(2))
+  total_pcs += pcs
+  total_money += money
+
+print "Lippuja tilattu: \2%d\2 (%.2f €)" % (total_pcs, total_money)
 

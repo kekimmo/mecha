@@ -13,7 +13,10 @@ class Listing (object):
         price_spans = soup.find("div", class_="spanprice").find_all('span')
         price_auction = price_spans[0].find('strong')
         if price_auction is not None:
-            price_str = price_auction.string
+            if price_auction.string is not None:
+              price_str = price_auction.string
+            else:
+              price_str = list(price_auction.stripped_strings)[1]
         else:
             price_str = price_spans[-1].string
         euros, cents = map(int, re.match(ur"(\d+),(\d{2}) €", price_str).groups())
@@ -44,7 +47,8 @@ def median (values):
                          2.0)
 
 
-conn = urllib.urlopen("http://www.huuto.net/hakutulos?words=desucon")
+#conn = urllib.urlopen("http://www.huuto.net/hakutulos?words=desucon")
+conn = urllib.urlopen('http://www.huuto.net/hakutulos/words/desucon/category/163-401')
 if conn.getcode() == 200:
     html = conn.read()
     soup = BeautifulSoup(html)

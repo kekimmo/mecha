@@ -45,5 +45,4 @@ fi
 # Pipe new input to mecha
 cd $MECHA_DIR
 ./desuwiki.py >> $PIPE_FILE
-#./desutick.py >> $PIPE_FILE
 
